@@ -7,7 +7,10 @@ public class Maze : MonoBehaviour {
 	public IntVector2 size;
 	public MazeCell cellPrefab;
 	public MazePassage passagePrefab;
-	public MazeWall wallPrefab;
+	public MazePassage doorPrefab;
+	[Range(0f, 1.0f)]
+	public float doorProbabilty;
+	public MazeWall[] wallPrefabs;
 
 	MazeCell[,] cells;
 
@@ -60,17 +63,18 @@ public class Maze : MonoBehaviour {
 	}
 
 	void CreatePassage(MazeCell thisCell, MazeCell thatCell, MazeDirection direction) {
-		MazePassage passage = Instantiate (passagePrefab) as MazePassage;
+		MazePassage prefab = Random.value < doorProbabilty ? doorPrefab : passagePrefab;
+		MazePassage passage = Instantiate (prefab) as MazePassage;
 		passage.Initialize (thisCell, thatCell, direction);
-		passage = Instantiate (passagePrefab) as MazePassage;
+		passage = Instantiate (prefab) as MazePassage;
 		passage.Initialize (thatCell, thisCell, direction.GetOposite());
 	}
 
 	void CreateWall(MazeCell thisCell, MazeCell thatCell, MazeDirection direction) {
-		MazeWall wall = Instantiate (wallPrefab) as MazeWall;
+		MazeWall wall = Instantiate (wallPrefabs[Random.Range(0, wallPrefabs.Length)]) as MazeWall;
 		wall.Initialize (thisCell, thatCell, direction);
 		if (thatCell != null) {
-			wall = Instantiate (wallPrefab) as MazeWall;
+			wall = Instantiate (wallPrefabs[Random.Range(0, wallPrefabs.Length)]) as MazeWall;
 			wall.Initialize (thatCell, thisCell, direction.GetOposite());
 		}
 	}

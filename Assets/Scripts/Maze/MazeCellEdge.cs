@@ -5,7 +5,7 @@ public abstract class MazeCellEdge : MonoBehaviour {
 	public MazeCell homeCell, neighborCell;
 	public MazeDirection direction;
 
-	public void Initialize (MazeCell cell, MazeCell thatCell, MazeDirection direction) {
+	public virtual void Initialize (MazeCell cell, MazeCell thatCell, MazeDirection direction) {
 		this.homeCell = cell;
 		this.neighborCell = thatCell;
 		this.direction = direction;
