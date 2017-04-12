@@ -5,6 +5,7 @@ using UnityEngine;
 public class MazeCell : MonoBehaviour {
 
 	public IntVector2 coordinates;
+	public MazeRoom room;
 
 	int initializedEdges;
 
@@ -12,6 +13,11 @@ public class MazeCell : MonoBehaviour {
 
 	public MazeCell() {
 		initializedEdges = 0;
+	}
+
+	public void Initialize(MazeRoom room) {
+		room.Add (this);
+		transform.GetChild (0).GetComponent<Renderer> ().material = room.settings.floorMaterial;
 	}
 
 	public MazeCellEdge GetEdge (MazeDirection direction) {

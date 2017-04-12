@@ -12,15 +12,21 @@ public class MazeDoor : MazePassage {
 		}
 	}
 
-	public override void Initialize (MazeCell cell, MazeCell thatCell, MazeDirection direction)
+	public override void Initialize (MazeCell thisCell, MazeCell thatCell, MazeDirection direction)
 	{
-		base.Initialize (cell, thatCell, direction);
+		base.Initialize (thisCell, thatCell, direction);
 		MazeDoor opositeDoor = OtherSideOfDoor;
 		if (opositeDoor != null) {
 			hinge.localScale = new Vector3(-1f, 1f, 1f);
 			Vector3 pos = hinge.localPosition;
 			pos.x = -pos.x;
 			hinge.localPosition = pos;
+		}
+		for (int i = 0; i < transform.childCount; i++) {
+			Transform child = transform.GetChild (i);
+			if (child != hinge) {
+				child.GetComponent<Renderer> ().material = thisCell.room.settings.wallMaterial;
+			}
 		}
 	}
 }

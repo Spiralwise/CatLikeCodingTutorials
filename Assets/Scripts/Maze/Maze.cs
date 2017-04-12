@@ -11,8 +11,10 @@ public class Maze : MonoBehaviour {
 	[Range(0f, 1.0f)]
 	public float doorProbabilty;
 	public MazeWall[] wallPrefabs;
+	public MazeRoomSettings[] roomSettings;
 
 	MazeCell[,] cells;
+	List<MazeRoom> rooms = new List<MazeRoom>();
 
 	public MazeCell GetCell(IntVector2 coordinates) {
 		return cells [coordinates.x, coordinates.y];
@@ -22,7 +24,9 @@ public class Maze : MonoBehaviour {
 		WaitForSeconds delay = new WaitForSeconds (generationRate);
 		cells = new MazeCell[size.x, size.y];
 		List<MazeCell> activeCells = new List<MazeCell>();
-		activeCells.Add (CreateCell (RandomCoordinates));
+		MazeCell firstCell = CreateCell (RandomCoordinates);
+		firstCell.Initialize (CreateRoom (-1));
+		activeCells.Add (firstCell);
 		while (activeCells.Count > 0) {
 			yield return delay;
 			ContinuousGeneration (activeCells);
@@ -52,6 +56,16 @@ public class Maze : MonoBehaviour {
 		}
 	}
 
+	MazeRoom CreateRoom(int indexToExclude) {
+		MazeRoom newRoom = ScriptableObject.CreateInstance<MazeRoom> ();
+		newRoom.roomID = Random.Range (0, roomSettings.Length);
+		if (newRoom.roomID == indexToExclude)
+			newRoom.roomID = (newRoom.roomID + 1) % roomSettings.Length;
+		newRoom.settings = roomSettings [newRoom.roomID];
+		rooms.Add (newRoom);
+		return newRoom;
+	}
+
 	MazeCell CreateCell(IntVector2 coordinates) {
 		MazeCell bufferCell = Instantiate (cellPrefab) as MazeCell;
 		cells [coordinates.x, coordinates.y] = bufferCell;
@@ -67,6 +81,10 @@ public class Maze : MonoBehaviour {
 		MazePassage passage = Instantiate (prefab) as MazePassage;
 		passage.Initialize (thisCell, thatCell, direction);
 		passage = Instantiate (prefab) as MazePassage;
+		if (passage is MazeDoor)
+			thatCell.Initialize (CreateRoom (thisCell.room.roomID));
+		else
+			thatCell.Initialize (thisCell.room);
 		passage.Initialize (thatCell, thisCell, direction.GetOposite());
 	}
 
