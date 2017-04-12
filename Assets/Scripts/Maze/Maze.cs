@@ -28,25 +28,24 @@ public class Maze : MonoBehaviour {
 
 	void ContinuousGeneration(List<MazeCell> activeCells) {
 		MazeCell activeCell = activeCells [activeCells.Count - 1];
-		MazeDirection direction = MazeDirections.RandomDirection;
-		IntVector2 coordinates = activeCell.coordinates + direction.ToIntVector2 ();
-		Debug.Log ("Look at " + coordinates.x + ", " + coordinates.y);
-		if (ContainsCoordinates (coordinates)) {
-			MazeCell neighbor = GetCell (coordinates);
-			if (neighbor == null) {
-				neighbor = CreateCell (coordinates);
-				CreatePassage (activeCell, neighbor, direction);
-				activeCells.Add (neighbor);
-				Debug.Log ("NO NEIGHTBOR");
-			} else {
-				CreateWall (activeCell, neighbor, direction);
-				activeCells.RemoveAt (activeCells.Count - 1);
-				Debug.Log ("NEIGHBOR");
-			}
-		} else {
-			Debug.Log ("OUT OF RANGE");
-			CreateWall (activeCell, null, direction);
+		if (activeCell.IsFullyInitialized) {
 			activeCells.RemoveAt (activeCells.Count - 1);
+		} else {
+			MazeDirection direction = activeCell.RandomUninitializedDirection;
+			IntVector2 coordinates = activeCell.coordinates + direction.ToIntVector2 ();
+			Debug.Log ("From: " + activeCell.coordinates.x + ", " + activeCell.coordinates.y + " To: " + coordinates.x + ", " + coordinates.y);
+			if (ContainsCoordinates (coordinates)) {
+				MazeCell neighbor = GetCell (coordinates);
+				if (neighbor == null) {
+					neighbor = CreateCell (coordinates);
+					CreatePassage (activeCell, neighbor, direction);
+					activeCells.Add (neighbor);
+				} else {
+					CreateWall (activeCell, neighbor, direction);
+				}
+			} else {
+				CreateWall (activeCell, null, direction);
+			}
 		}
 	}
 
@@ -72,7 +71,7 @@ public class Maze : MonoBehaviour {
 		wall.Initialize (thisCell, thatCell, direction);
 		if (thatCell != null) {
 			wall = Instantiate (wallPrefab) as MazeWall;
-			wall.Initialize (thatCell, thisCell, direction);
+			wall.Initialize (thatCell, thisCell, direction.GetOposite());
 		}
 	}
 
