@@ -8,8 +8,12 @@ public class Player : MonoBehaviour {
 	MazeDirection currentDirection;
 
 	public void SetLocation (MazeCell cell) {
+		if (currentCell != null)
+			currentCell.OnPlayerExited ();
 		currentCell = cell;
 		transform.localPosition = cell.transform.localPosition;
+		currentCell.OnPlayerEntered ();
+		Debug.Log ("My cell is " + currentCell.coordinates.x + ", " + currentCell.coordinates.y);
 	}
 
 	void Move (MazeDirection direction) {

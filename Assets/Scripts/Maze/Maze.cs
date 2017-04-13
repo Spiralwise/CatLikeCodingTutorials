@@ -40,7 +40,6 @@ public class Maze : MonoBehaviour {
 		} else {
 			MazeDirection direction = activeCell.RandomUninitializedDirection;
 			IntVector2 coordinates = activeCell.coordinates + direction.ToIntVector2 ();
-			Debug.Log ("From: " + activeCell.coordinates.x + ", " + activeCell.coordinates.y + " To: " + coordinates.x + ", " + coordinates.y);
 			if (ContainsCoordinates (coordinates)) {
 				MazeCell neighbor = GetCell (coordinates);
 				if (neighbor == null) {
