@@ -47,6 +47,8 @@ public class Maze : MonoBehaviour {
 					neighbor = CreateCell (coordinates);
 					CreatePassage (activeCell, neighbor, direction);
 					activeCells.Add (neighbor);
+				} else if (activeCell.room.roomID == neighbor.room.roomID) {
+					CreatePassageInSameRoom (activeCell, neighbor, direction);
 				} else {
 					CreateWall (activeCell, neighbor, direction);
 				}
@@ -86,6 +88,13 @@ public class Maze : MonoBehaviour {
 		else
 			thatCell.Initialize (thisCell.room);
 		passage.Initialize (thatCell, thisCell, direction.GetOposite());
+	}
+
+	void CreatePassageInSameRoom(MazeCell thisCell, MazeCell thatCell, MazeDirection direction) {
+		MazePassage passage = Instantiate (passagePrefab) as MazePassage;
+		passage.Initialize (thisCell, thatCell, direction);
+		passage = Instantiate (passagePrefab) as MazePassage;
+		thatCell.Initialize (thisCell.room);
 	}
 
 	void CreateWall(MazeCell thisCell, MazeCell thatCell, MazeDirection direction) {
