@@ -19,11 +19,16 @@ public class MeshGenerator : MonoBehaviour {
 		GetComponent<MeshFilter> ().mesh = mesh = new Mesh ();
 		mesh.name = "Procedural grid";
 		vertices = new Vector3[(xSize + 1) * (ySize + 1)];
+		Vector2[] UV = new Vector2[vertices.Length];
 		for (int i = 0, y = 0; y <= ySize; y++)
-			for (int x = 0; x <= xSize; x++, i++)
+			for (int x = 0; x <= xSize; x++, i++) {
 				vertices [i] = new Vector3 (x, y);
+				UV [i] = new Vector2 ((float)x/xSize*2, (float)y/ySize);
+			}
 		mesh.vertices = vertices;
+		mesh.uv = UV;
 
+		/* Note: Can do better with dual indices : one fort vertices, one for triangles. */
 		int[] triangles = new int[(xSize+1)*(ySize+1)*2*3];
 		for (int i = 0, y = 0; y < ySize; y++)
 			for (int x = 0; x < xSize; x++, i+=6) {
@@ -34,6 +39,7 @@ public class MeshGenerator : MonoBehaviour {
 				mesh.triangles = triangles;
 				yield return wiat;
 			}
+		mesh.RecalculateNormals ();
 	}
 
 	void OnDrawGizmos () {
