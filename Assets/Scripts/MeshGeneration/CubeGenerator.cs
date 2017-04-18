@@ -9,6 +9,7 @@ public class CubeGenerator : MonoBehaviour {
 
 	protected Vector3[] vertices;
 	protected Mesh mesh;
+	Color32[] cubeUV;
 
 	static int SetQuad (int[] triangles, int i, int v00, int v10, int v01, int v11) {
 		triangles [i] = v00;
@@ -32,6 +33,7 @@ public class CubeGenerator : MonoBehaviour {
 
 	virtual protected void SetVertex (int idx, int x, int y, int z) {
 		vertices [idx] = new Vector3 (x, y, z);
+		cubeUV [idx] = new Color32 ((byte)x, (byte)y, (byte)z, 0);
 	}
 
 	virtual protected void CreateVertices () {
@@ -39,6 +41,7 @@ public class CubeGenerator : MonoBehaviour {
 		int edgeVertices = (xSize + ySize + zSize - 3) * 4;
 		int faceVertices = (((xSize - 1) * (ySize - 1)) + ((xSize - 1) * (zSize - 1)) + ((zSize - 1) * (ySize - 1))) * 2;
 		vertices = new Vector3 [cornerVertices + edgeVertices + faceVertices];
+		cubeUV = new Color32[vertices.Length];
 
 		int v = 0;
 		for (int y = 0; y <= ySize; y++) {
@@ -57,6 +60,7 @@ public class CubeGenerator : MonoBehaviour {
 				SetVertex (v+(xSize-1)*(zSize-1)-1, x, 0, z);
 			}
 		mesh.vertices = vertices;
+		mesh.colors32 = cubeUV;
 	}
 
 	protected void CreateTriangles () {
