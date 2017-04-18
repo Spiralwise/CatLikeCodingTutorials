@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour {
 
 	public int sensivity = 100;

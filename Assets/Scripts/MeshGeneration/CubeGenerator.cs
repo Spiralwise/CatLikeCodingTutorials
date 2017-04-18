@@ -7,8 +7,8 @@ public class CubeGenerator : MonoBehaviour {
 
 	public int xSize, ySize, zSize;
 
-	Vector3[] vertices;
-	Mesh mesh;
+	protected Vector3[] vertices;
+	protected Mesh mesh;
 
 	static int SetQuad (int[] triangles, int i, int v00, int v10, int v01, int v11) {
 		triangles [i] = v00;
@@ -22,22 +22,19 @@ public class CubeGenerator : MonoBehaviour {
 		Generate ();
 	}
 
-	void Generate () {
+	virtual protected void Generate () {
 		GetComponent<MeshFilter> ().mesh = mesh = new Mesh ();
 		mesh.name = "Procedural cube";
 
 		CreateVertices ();
 		CreateTriangles ();
-
-//		Vector2[] UV = new Vector2[vertices.Length];
-//		Vector4[] tangents = new Vector4[vertices.Length];
-//		Vector4 tangent = new Vector4 (1f, 0f, 0f, -1f);
-
-//		mesh.uv = UV;
-//		mesh.tangents = tangents;
 	}
 
-	void CreateVertices () {
+	virtual protected void SetVertex (int idx, int x, int y, int z) {
+		vertices [idx] = new Vector3 (x, y, z);
+	}
+
+	virtual protected void CreateVertices () {
 		int cornerVertices = 8;
 		int edgeVertices = (xSize + ySize + zSize - 3) * 4;
 		int faceVertices = (((xSize - 1) * (ySize - 1)) + ((xSize - 1) * (zSize - 1)) + ((zSize - 1) * (ySize - 1))) * 2;
@@ -46,23 +43,23 @@ public class CubeGenerator : MonoBehaviour {
 		int v = 0;
 		for (int y = 0; y <= ySize; y++) {
 			for (int x = 0; x <= xSize; x++)
-				vertices [v++] = new Vector3 (x, y, 0);
+				SetVertex (v++, x, y, 0);
 			for (int z = 1; z <= zSize; z++)
-				vertices [v++] = new Vector3 (xSize, y, z);
+				SetVertex (v++, xSize, y, z);
 			for (int x = xSize - 1; x >= 0; x--)
-				vertices [v++] = new Vector3 (x, y, zSize);
+				SetVertex (v++, x, y, zSize);
 			for (int z = zSize - 1; z > 0; z--)
-				vertices [v++] = new Vector3 (0, y, z);
+				SetVertex (v++, 0, y, z);
 		}
 		for (int z = 1; z < zSize; z++)
 			for (int x = 1; x < xSize; x++) {
-				vertices [v++] = new Vector3 (x, ySize, z);
-				vertices [v+(xSize-1)*(zSize-1)-1] = new Vector3 (x, 0, z);
+				SetVertex (v++, x, ySize, z);
+				SetVertex (v+(xSize-1)*(zSize-1)-1, x, 0, z);
 			}
 		mesh.vertices = vertices;
 	}
 
-	void CreateTriangles () {
+	protected void CreateTriangles () {
 		/* Note: Can do better with dual indices : one fort vertices, one for triangles. */
 		int quads = ((xSize * ySize) + (ySize * zSize) + (xSize * zSize)) * 2;
 		int[] triangles = new int[quads * 6];
