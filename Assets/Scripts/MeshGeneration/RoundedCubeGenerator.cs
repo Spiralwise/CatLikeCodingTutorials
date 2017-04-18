@@ -47,7 +47,7 @@ public class RoundedCubeGenerator : CubeGenerator {
 
 		mesh.normals = normals;
 	}
-
+		
 	void OnDrawGizmos () {
 		if (vertices != null) {
 			Gizmos.color = Color.black;

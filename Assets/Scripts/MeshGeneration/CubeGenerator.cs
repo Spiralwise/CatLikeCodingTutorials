@@ -60,22 +60,31 @@ public class CubeGenerator : MonoBehaviour {
 	}
 
 	protected void CreateTriangles () {
-		/* Note: Can do better with dual indices : one fort vertices, one for triangles. */
-		int quads = ((xSize * ySize) + (ySize * zSize) + (xSize * zSize)) * 2;
-		int[] triangles = new int[quads * 6];
+		int[] trianglesZ = new int[(xSize * ySize) * 12];
+		int[] trianglesX = new int[(zSize * ySize) * 12];
+		int[] trianglesY = new int[(xSize * zSize) * 12];
 
-		int i = 0;
-		int x;
+		int v = 0;
+		int tZ = 0, tX = 0, tY = 0;
 		int ringLength = (xSize + zSize) * 2;
-		for (int y = 0; y < ySize; y++) {
-			for (x = ringLength * y; x < ringLength * (y + 1) - 1; x++)
-				i = SetQuad (triangles, i, x, x + 1, ringLength + x, ringLength + x + 1);
-			i = SetQuad (triangles, i, x, x + 1 - ringLength, ringLength + x, x + 1);
+		for (int y = 0; y < ySize; y++, v++) {
+			for (int q = 0; q < xSize; q++, v++)
+				tZ = SetQuad (trianglesZ, tZ, v, v + 1, ringLength + v, ringLength + v + 1);
+			for (int q = 0; q < zSize; q++, v++)
+				tX = SetQuad(trianglesX, tX, v, v + 1, ringLength + v, ringLength + v + 1);
+			for (int q = 0; q < xSize; q++, v++)
+				tZ = SetQuad (trianglesZ, tZ, v, v + 1, ringLength + v, ringLength + v + 1);
+			for (int q = 0; q < zSize - 1; q++, v++)
+				tX = SetQuad(trianglesX, tX, v, v + 1, ringLength + v, ringLength + v + 1);
+			tX = SetQuad (trianglesX, tX, v, v + 1 - ringLength, ringLength + v, v + 1);
 		}
-		i = CreateTopFace (triangles, i, ringLength);
-		i = CreateBottomFace (triangles, i, ringLength);
+		tY = CreateTopFace (trianglesY, tY, ringLength);
+		tY = CreateBottomFace (trianglesY, tY, ringLength);
 
-		mesh.triangles = triangles;
+		mesh.subMeshCount = 3;
+		mesh.SetTriangles (trianglesZ, 0);
+		mesh.SetTriangles (trianglesX, 1);
+		mesh.SetTriangles (trianglesY, 2);
 		mesh.RecalculateNormals ();
 	}
 
