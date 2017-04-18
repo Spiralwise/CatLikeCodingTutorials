@@ -19,6 +19,7 @@ public class RoundedCubeGenerator : CubeGenerator {
 
 		CreateVertices ();
 		base.CreateTriangles ();
+		CreateColliders ();
 	}
 
 	override protected void SetVertex (int idx, int x, int y, int z) {
@@ -47,9 +48,47 @@ public class RoundedCubeGenerator : CubeGenerator {
 
 		mesh.normals = normals;
 	}
-		
+
+	void CreateColliders () {
+		AddBoxCollider (xSize, ySize - roundness * 2, xSize - roundness * 2);
+		AddBoxCollider (xSize - roundness * 2, ySize, xSize - roundness * 2);
+		AddBoxCollider (xSize - roundness * 2, ySize - roundness * 2, xSize);
+
+		Vector3 min = Vector3.one * roundness;
+		Vector3 half = new Vector3 (xSize, ySize, zSize) * 0.5f;
+		Vector3 max = new Vector3 (xSize, ySize, zSize) - min;
+
+		AddCapsuleCollider (0, half.x, min.y, min.z);
+		AddCapsuleCollider (0, half.x, min.y, max.z);
+		AddCapsuleCollider (0, half.x, max.y, min.z);
+		AddCapsuleCollider (0, half.x, max.y, max.z);
+
+		AddCapsuleCollider (1, min.x, half.y, min.z);
+		AddCapsuleCollider (1, min.x, half.y, max.z);
+		AddCapsuleCollider (1, max.x, half.y, min.z);
+		AddCapsuleCollider (1, max.x, half.y, max.z);
+
+		AddCapsuleCollider (2, min.x, min.y, half.z);
+		AddCapsuleCollider (2, min.x, max.y, half.z);
+		AddCapsuleCollider (2, max.x, min.y, half.z);
+		AddCapsuleCollider (2, max.x, max.y, half.z);
+	}
+
+	void AddBoxCollider (float x, float y, float z) {
+		BoxCollider c = gameObject.AddComponent<BoxCollider> ();
+		c.size = new Vector3 (x, y, z);
+	}
+
+	void AddCapsuleCollider (int direction, float x, float y, float z) {
+		CapsuleCollider c = gameObject.AddComponent<CapsuleCollider> ();
+		c.center = new Vector3 (x, y, z);
+		c.direction = direction;
+		c.radius = roundness;
+		c.height = c.center [direction] * 2f;
+	}
+
 	void OnDrawGizmos () {
-		if (vertices != null) {
+		/*if (vertices != null) {
 			Gizmos.color = Color.black;
 			for (int i = 0; i < vertices.Length; i++) {
 				Gizmos.color = Color.black;
@@ -57,6 +96,6 @@ public class RoundedCubeGenerator : CubeGenerator {
 				Gizmos.color = Color.yellow;
 				Gizmos.DrawRay (vertices [i], normals [i]);
 			}
-		}
+		}*/
 	}
 }
