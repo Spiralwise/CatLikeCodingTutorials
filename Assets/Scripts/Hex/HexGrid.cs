@@ -47,6 +47,20 @@ public class HexGrid : MonoBehaviour {
 		localLabel.rectTransform.SetParent (canvas.transform, false);
 		localLabel.rectTransform.anchoredPosition = new Vector2 (position.x, position.z);
 		localLabel.text = localCell.coordinates.ToStringOnSeparateLines ();
+
+		if (x > 0)
+			localCell.SetNeighbor (HexDirection.W, cells [x - 1 + y * width]);
+		if (y > 0) {
+			if ((y % 2) == 1) {
+				localCell.SetNeighbor (HexDirection.SW, cells [x + (y - 1) * width]);
+				if (x < width - 1)
+					localCell.SetNeighbor (HexDirection.SE, cells [x + 1 + (y - 1) * width]);
+			} else {
+				localCell.SetNeighbor (HexDirection.SE, cells [x + (y - 1) * width]);
+				if (x > 0)
+					localCell.SetNeighbor (HexDirection.SW, cells [x - 1 + (y - 1) * width]);
+			}
+		}
 	}
 
 	public void ColorCell (Vector3 position, Color color) {
@@ -56,6 +70,6 @@ public class HexGrid : MonoBehaviour {
 		HexCell target = cells[index];
 		target.color = color;
 		mesh.Triangulate (cells);
-		Debug.Log ("touched at " + targetCoordinates.toString ());
+		//Debug.Log ("touched at " + targetCoordinates.toString ());
 	}
 }

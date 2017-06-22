@@ -22,8 +22,10 @@ public class HexMapEditor : MonoBehaviour {
 	void HandleInput () {
 		Ray inputRay = Camera.main.ScreenPointToRay (Input.mousePosition);
 		RaycastHit hit;
-		if (Physics.Raycast (inputRay, out hit))
+		if (Physics.Raycast (inputRay, out hit)) {
+			//Debug.Log ("This is hit!");
 			grid.ColorCell (hit.point, activeColor);
+		}
 	}
 
 	public void SelectColor (int index) {
