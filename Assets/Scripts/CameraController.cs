@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour {
@@ -21,22 +22,24 @@ public class CameraController : MonoBehaviour {
 	}
 
 	void Update () {
-		if (cameraTarget != null)
-			target = cameraTarget.transform.position;
-		float mouseX = Input.GetAxis ("Mouse X");
-		float mouseY = Input.GetAxis ("Mouse Y");
-		if (Input.GetMouseButton (0)) {
-			if (Input.GetKey (KeyCode.LeftAlt))
-				transform.RotateAround (target, Vector3.up, mouseX * sensivity * Time.deltaTime);
-			else {
-				Vector3 forward = Vector3.ProjectOnPlane (transform.forward, Vector3.up);
-				transform.Translate (new Vector3(
-					-mouseX * sensivity * Time.deltaTime,
-					0f,
-					0f));
-				transform.position -= mouseY * forward.normalized * sensivity * Time.deltaTime;
+		if (!EventSystem.current.IsPointerOverGameObject ()) {
+			if (cameraTarget != null)
+				target = cameraTarget.transform.position;
+			float mouseX = Input.GetAxis ("Mouse X");
+			float mouseY = Input.GetAxis ("Mouse Y");
+			if (Input.GetMouseButton (0)) {
+				if (Input.GetKey (KeyCode.LeftAlt))
+					transform.RotateAround (target, Vector3.up, mouseX * sensivity * Time.deltaTime);
+				else {
+					Vector3 forward = Vector3.ProjectOnPlane (transform.forward, Vector3.up);
+					transform.Translate (new Vector3 (
+						-mouseX * sensivity * Time.deltaTime,
+						0f,
+						0f));
+					transform.position -= mouseY * forward.normalized * sensivity * Time.deltaTime;
+				}
 			}
+			transform.Translate (Vector3.forward * Input.GetAxis ("Mouse ScrollWheel") * scrollSensivity * Time.deltaTime);
 		}
-		transform.Translate (Vector3.forward * Input.GetAxis ("Mouse ScrollWheel") * scrollSensivity * Time.deltaTime);
 	}
 }
