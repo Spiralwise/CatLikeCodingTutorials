@@ -61,15 +61,19 @@ public class HexGrid : MonoBehaviour {
 					localCell.SetNeighbor (HexDirection.SW, cells [x - 1 + (y - 1) * width]);
 			}
 		}
+
+		localCell.uiRect = localLabel.rectTransform;
 	}
 
-	public void ColorCell (Vector3 position, Color color) {
+	public HexCell GetCell (Vector3 position) {
 		position = transform.InverseTransformPoint (position);
 		HexCoordinates targetCoordinates = HexCoordinates.FromPosition (position);
 		int index = targetCoordinates.X + targetCoordinates.Y / 2 + targetCoordinates.Y * width;
-		HexCell target = cells[index];
-		target.color = color;
-		mesh.Triangulate (cells);
+		return cells[index];
 		//Debug.Log ("touched at " + targetCoordinates.toString ());
+	}
+
+	public void Refresh () {
+		mesh.Triangulate (cells);
 	}
 }
